@@ -4,12 +4,12 @@ set -e
 
 unset GIT_DIR
 
-BUILDPACKS=<<- EOM
+BUILDPACKS="
 https://github.com/gigalixir/gigalixir-buildpack-clean-cache.git
 https://github.com/HashNuke/heroku-buildpack-elixir.git
 https://github.com/gjaldon/heroku-buildpack-phoenix-static.git
 https://github.com/gigalixir/gigalixir-buildpack-distillery.git
-EOM
+"
 
 for BUILDPACK in $BUILDPACKS; do
   dir=$(mktemp -t buildpackXXXXX)
