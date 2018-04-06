@@ -8,8 +8,16 @@ BUILDPACKS="
 https://github.com/gigalixir/gigalixir-buildpack-clean-cache.git
 https://github.com/HashNuke/heroku-buildpack-elixir.git
 https://github.com/gjaldon/heroku-buildpack-phoenix-static.git
+"
+
+distillery_file_url="$1/rel/config.exs"
+
+if [ -f $distillery_file_url ]; then
+  # app is using distillery, include the distillery buildpack
+  BUILDPACKS="$BUILDPACKS
 https://github.com/gigalixir/gigalixir-buildpack-distillery.git
 "
+fi
 
 for BUILDPACK in $BUILDPACKS; do
   dir=$(mktemp -t buildpackXXXXX)
