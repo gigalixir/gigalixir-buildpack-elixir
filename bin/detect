@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 
-if [ -f $1/.buildpacks ]; then
-  echo "Multipack"
+mix_file_url="$1/mix.exs"
+
+if [ -f $mix_file_url ];
+then
+  echo "Elixir Phoenix Distillery"
   exit 0
 else
-  echo "no .buildpacks file"
   exit 1
 fi
+
