@@ -3,11 +3,12 @@
 mix_file_url="$1/mix.exs"
 distillery_file_url="$1/rel/config.exs"
 
-if [ -f $mix_file_url && -f $distillery_file_url ]; then
-  echo "Elixir Phoenix Distillery"
-  exit 0
-elif [ -f $mix_file_url ]; then
-  echo "Elixir Phoenix"
+if [ -f $mix_file_url ]; then
+  if [ -f $distillery_file_url ]; then
+    echo "Elixir+Phoenix+Distillery"
+  else
+    echo "Elixir+Phoenix"
+  fi
   exit 0
 else
   exit 1
