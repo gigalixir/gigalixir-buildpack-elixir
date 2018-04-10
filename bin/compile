@@ -17,6 +17,13 @@ if [ -f $distillery_file_url ]; then
   BUILDPACKS="$BUILDPACKS
 https://github.com/gigalixir/gigalixir-buildpack-distillery.git
 "
+else
+  # app is using mix, include the mix buildpack for the sole
+  # purpose of generating a default Procfile properly for 
+  # Gigalixir
+  BUILDPACKS="$BUILDPACKS
+https://github.com/gigalixir/gigalixir-buildpack-mix.git
+"
 fi
 
 for BUILDPACK in $BUILDPACKS; do
