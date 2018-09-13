@@ -30,7 +30,7 @@ else
   # purpose of generating a default Procfile properly for 
   # Gigalixir
   BUILDPACKS="$BUILDPACKS
-https://github.com/gigalixir/gigalixir-buildpack-mix.git
+https://github.com/jesseshieh/gigalixir-buildpack-mix.git
 "
 fi
 
