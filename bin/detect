@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
 
 mix_file_url="$1/mix.exs"
+assets_dir_url="$1/assets"
 distillery_file_url="$1/rel/config.exs"
 
 if [ -f $mix_file_url ]; then
+  echo -n "Elixir"
+  if [ -d $assets_dir_url ]; then
+    echo "+Phoenix"
+  fi
   if [ -f $distillery_file_url ]; then
-    echo "Elixir+Phoenix+Distillery"
-  else
-    echo "Elixir+Phoenix"
+    echo "+Distillery"
   fi
   exit 0
 else
