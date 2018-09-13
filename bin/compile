@@ -7,9 +7,17 @@ unset GIT_DIR
 BUILDPACKS="
 https://github.com/gigalixir/gigalixir-buildpack-clean-cache.git
 https://github.com/HashNuke/heroku-buildpack-elixir.git
-https://github.com/gjaldon/heroku-buildpack-phoenix-static.git
 "
 
+# detect phoenix assets folder
+if [ -d "$1/assets" ]; then
+  # app is using phoenix assets, include the phoenix static asset buildpack
+  BUILDPACKS="$BUILDPACKS
+https://github.com/gjaldon/heroku-buildpack-phoenix-static.git
+"
+fi
+
+# detect distillery or mix
 distillery_file_url="$1/rel/config.exs"
 
 if [ -f $distillery_file_url ]; then
