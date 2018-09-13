@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 if [ -e $1/last_pack_release.out ]; then
+  # if you get input file is output file
+  # is it because your testing with a multi inside of a multi?
   cat $1/last_pack_release.out
   rm $1/last_pack_release.out
 else
