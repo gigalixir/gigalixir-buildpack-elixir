@@ -7,11 +7,12 @@ distillery_file_url="$1/rel/config.exs"
 if [ -f $mix_file_url ]; then
   echo -n "Elixir"
   if [ -d $assets_dir_url ]; then
-    echo "+Phoenix"
+    echo -n "+Phoenix"
   fi
   if [ -f $distillery_file_url ]; then
-    echo "+Distillery"
+    echo -n "+Distillery"
   fi
+  echo ""
   exit 0
 else
   exit 1
