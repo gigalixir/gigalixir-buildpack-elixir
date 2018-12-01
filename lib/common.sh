@@ -8,7 +8,6 @@ load_config() {
 
   # defaults from https://github.com/gjaldon/heroku-buildpack-phoenix-static/blob/master/phoenix_static_buildpack.config
   phoenix_relative_path=.
-  assets_path=.
 
   if [ -f $custom_config_file ]; then
     info "Found custom phoenix_static_buildpack.config"
@@ -22,6 +21,10 @@ detect_assets() {
   info "Detecting assets directory"
   if [ -f "$phoenix_dir/$assets_path/package.json" ]; then
     info "package.json found in custom directory"
+    assets_detected=true
+  elif [ -f "$phoenix_dir/assets/package.json" ]; then
+    # Check phoenix assets directory for package.json, phoenix 1.3.x and later
+    info "package.json found in assets directory"
     assets_detected=true
   elif [ -f "$phoenix_dir/package.json" ]; then
     # Check phoenix root directory for package.json, phoenix 1.2.x and prior
