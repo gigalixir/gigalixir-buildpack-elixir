@@ -1,12 +1,26 @@
 #!/usr/bin/env bash
 
-mix_file_url="$1/mix.exs"
-assets_dir_url="$1/assets"
-distillery_file_url="$1/rel/config.exs"
+# build_pack_dir=$(cd $(dirname $(dirname $0)); pwd)
+
+set -o errexit    # always exit on error
+set -o pipefail   # do not ignore exit codes when piping output
+unset GIT_DIR     # Avoid GIT_DIR leak from previous build steps
+
+mkdir -p $1 $2 $3 # Ensure dirs are present
+
+build_dir=$(cd $1 && pwd)
+
+mix_file_url="$build_dir/mix.exs"
+distillery_file_url="$build_dir/rel/config.exs"
+
+source ${build_pack_dir}/lib/common.sh
+
+load_config
+detect_assets
 
 if [ -f $mix_file_url ]; then
   echo -n "Elixir"
-  if [ -d $assets_dir_url ]; then
+  if $assets_detected; then
     echo -n "+Phoenix"
   fi
   if [ -f $distillery_file_url ]; then
