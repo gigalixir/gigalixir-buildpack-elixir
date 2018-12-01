@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# build_pack_dir=$(cd $(dirname $(dirname $0)); pwd)
+build_pack_dir=$(cd $(dirname $(dirname $0)); pwd)
 
 set -o errexit    # always exit on error
 set -o pipefail   # do not ignore exit codes when piping output
