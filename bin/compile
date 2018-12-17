@@ -1,8 +1,22 @@
 #!/usr/bin/env bash
 
-set -e
+build_pack_dir=$(cd $(dirname $(dirname $0)); pwd)
 
+set -o errexit    # always exit on error
+set -o pipefail   # do not ignore exit codes when piping output
 unset GIT_DIR
+
+mkdir -p $1 $2 $3 # Ensure dirs are present
+
+build_dir=$(cd $1 && pwd)
+
+mix_file_url="$build_dir/mix.exs"
+distillery_file_url="$build_dir/rel/config.exs"
+
+source ${build_pack_dir}/lib/common.sh
+
+load_config
+detect_assets
 
 BUILDPACKS="
 https://github.com/gigalixir/gigalixir-buildpack-clean-cache.git
@@ -10,15 +24,12 @@ https://github.com/HashNuke/heroku-buildpack-elixir.git
 "
 
 # detect phoenix assets folder
-if [ -d "$1/assets" ]; then
+if $assets_detected; then
   # app is using phoenix assets, include the phoenix static asset buildpack
   BUILDPACKS="$BUILDPACKS
 https://github.com/gjaldon/heroku-buildpack-phoenix-static.git
 "
 fi
-
-# detect distillery or mix
-distillery_file_url="$1/rel/config.exs"
 
 if [ -f $distillery_file_url ]; then
   # app is using distillery, include the distillery buildpack
