@@ -12,6 +12,7 @@ build_dir=$(cd $1 && pwd)
 
 mix_file_url="$build_dir/mix.exs"
 distillery_file_url="$build_dir/rel/config.exs"
+elixir_releases_file_url="$build_dir/config/releases.exs"
 
 source ${build_pack_dir}/lib/common.sh
 
@@ -35,6 +36,11 @@ if [ -f $distillery_file_url ]; then
   # app is using distillery, include the distillery buildpack
   BUILDPACKS="$BUILDPACKS
 https://github.com/gigalixir/gigalixir-buildpack-distillery.git
+"
+elif [ -f $elixir_releases_file_url ]; then
+  # app is elixir releases, include the releases buildpack
+  BUILDPACKS="$BUILDPACKS
+https://github.com/gigalixir/gigalixir-buildpack-releases.git
 "
 else
   # app is using mix, include the mix buildpack for the sole

@@ -12,6 +12,7 @@ build_dir=$(cd $1 && pwd)
 
 mix_file_url="$build_dir/mix.exs"
 distillery_file_url="$build_dir/rel/config.exs"
+elixir_releases_file_url="$build_dir/config/releases.exs"
 
 source ${build_pack_dir}/lib/common.sh
 
@@ -25,6 +26,9 @@ if [ -f $mix_file_url ]; then
   fi
   if [ -f $distillery_file_url ]; then
     echo -n "+Distillery"
+  fi
+  if [ -f $elixir_releases_file_url ]; then
+    echo -n "+Releases"
   fi
   echo ""
   exit 0
