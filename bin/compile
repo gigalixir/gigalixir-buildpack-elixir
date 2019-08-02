@@ -20,7 +20,6 @@ load_config
 detect_assets
 
 BUILDPACKS="
-https://github.com/gigalixir/gigalixir-buildpack-clean-cache.git
 https://github.com/HashNuke/heroku-buildpack-elixir.git
 "
 
