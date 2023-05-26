@@ -6,7 +6,7 @@ info() {
 load_config() {
   local custom_config_file="${build_dir}/phoenix_static_buildpack.config"
 
-  # defaults from https://github.com/gjaldon/heroku-buildpack-phoenix-static/blob/master/phoenix_static_buildpack.config
+  # defaults from https://github.com/gigalixir/gigalixir-buildpack-phoenix-static/blob/master/phoenix_static_buildpack.config
   phoenix_relative_path=.
 
   if [ -f $custom_config_file ]; then
