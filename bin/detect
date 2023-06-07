@@ -10,9 +10,10 @@ mkdir -p $1 $2 $3 # Ensure dirs are present
 
 build_dir=$(cd $1 && pwd)
 
-mix_file_url="$build_dir/mix.exs"
-distillery_file_url="$build_dir/rel/config.exs"
-elixir_releases_file_url="$build_dir/config/releases.exs"
+mix_file_path="$build_dir/mix.exs"
+distillery_file_path="$build_dir/rel/config.exs"
+elixir_releases_file_path="$build_dir/config/releases.exs"
+elixir_releases_file_path2="$build_dir/config/runtime.exs"
 
 source ${build_pack_dir}/lib/common.sh
 
@@ -24,11 +25,12 @@ if [ -f $mix_file_url ]; then
   if $phoenix_detected; then
     echo -n "+Phoenix"
   fi
-  if [ -f $distillery_file_url ]; then
-    echo -n "+Distillery"
-  fi
-  if [ -f $elixir_releases_file_url ]; then
+  if [ -f $elixir_releases_file_path ] || [ -f $elixir_releases_file_path2 ]; then
     echo -n "+Releases"
+  elif [ -f $distillery_file_path ]; then
+    echo -n "+Distillery"
+  else
+    echo -n "+Mix"
   fi
   echo ""
   exit 0

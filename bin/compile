@@ -10,9 +10,10 @@ mkdir -p $1 $2 $3 # Ensure dirs are present
 
 build_dir=$(cd $1 && pwd)
 
-mix_file_url="$build_dir/mix.exs"
-distillery_file_url="$build_dir/rel/config.exs"
-elixir_releases_file_url="$build_dir/config/releases.exs"
+mix_file_path="$build_dir/mix.exs"
+distillery_file_path="$build_dir/rel/config.exs"
+elixir_releases_file_path="$build_dir/config/releases.exs"
+elixir_releases_file_path2="$build_dir/config/runtime.exs"
 
 source ${build_pack_dir}/lib/common.sh
 
@@ -31,15 +32,15 @@ https://github.com/gigalixir/gigalixir-buildpack-phoenix-static.git
 "
 fi
 
-if [ -f $distillery_file_url ]; then
-  # app is using distillery, include the distillery buildpack
-  BUILDPACKS="$BUILDPACKS
-https://github.com/gigalixir/gigalixir-buildpack-distillery.git
-"
-elif [ -f $elixir_releases_file_url ]; then
+if [ -f $elixir_releases_file_path ] || [ -f $elixir_releases_file_path2 ]; then
   # app is elixir releases, include the releases buildpack
   BUILDPACKS="$BUILDPACKS
 https://github.com/gigalixir/gigalixir-buildpack-releases.git
+"
+elif [ -f $distillery_file_path ]; then
+  # app is using distillery, include the distillery buildpack
+  BUILDPACKS="$BUILDPACKS
+https://github.com/gigalixir/gigalixir-buildpack-distillery.git
 "
 else
   # app is using mix, include the mix buildpack for the sole
