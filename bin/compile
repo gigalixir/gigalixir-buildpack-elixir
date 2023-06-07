@@ -20,7 +20,7 @@ elixir_config_file_path=$build_dir/elixir_buildpack.config
 source ${build_pack_dir}/lib/common.sh
 
 load_config
-detect_assets
+detect_phoenix
 
 BUILDPACKS="
 https://github.com/HashNuke/heroku-buildpack-elixir.git
