@@ -15,6 +15,8 @@ distillery_file_path="$build_dir/rel/config.exs"
 elixir_releases_file_path="$build_dir/config/releases.exs"
 elixir_releases_file_path2="$build_dir/config/runtime.exs"
 
+elixir_config_file_path=$build_dir/elixir_buildpack.config
+
 source ${build_pack_dir}/lib/common.sh
 
 load_config
@@ -23,6 +25,15 @@ detect_assets
 BUILDPACKS="
 https://github.com/HashNuke/heroku-buildpack-elixir.git
 "
+
+if [ ! -f $elixir_config_file_path ]; then
+  # TODO: get the latest versions from the api server
+  echo "Missing elixir_buildpack.config, using:"
+  echo "* Erlang 26.0"
+  echo "* Elixir 1.14.5"
+
+  echo -e "elixir_version=1.14.5\nerlang_version=26.0" > $elixir_config_file_path
+fi
 
 # detect phoenix assets folder
 if $phoenix_detected; then
