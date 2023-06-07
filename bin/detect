@@ -17,11 +17,11 @@ elixir_releases_file_url="$build_dir/config/releases.exs"
 source ${build_pack_dir}/lib/common.sh
 
 load_config
-detect_assets
 
 if [ -f $mix_file_url ]; then
+  detect_phoenix
   echo -n "Elixir"
-  if $assets_detected; then
+  if $phoenix_detected; then
     echo -n "+Phoenix"
   fi
   if [ -f $distillery_file_url ]; then

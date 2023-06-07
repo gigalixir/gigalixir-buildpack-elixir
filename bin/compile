@@ -24,7 +24,7 @@ https://github.com/HashNuke/heroku-buildpack-elixir.git
 "
 
 # detect phoenix assets folder
-if $assets_detected; then
+if $phoenix_detected; then
   # app is using phoenix assets, include the phoenix static asset buildpack
   BUILDPACKS="$BUILDPACKS
 https://github.com/gigalixir/gigalixir-buildpack-phoenix-static.git
