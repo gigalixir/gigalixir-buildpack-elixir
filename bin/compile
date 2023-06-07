@@ -39,7 +39,7 @@ fi
 if $phoenix_detected; then
   # app is using phoenix assets, include the phoenix static asset buildpack
   BUILDPACKS="$BUILDPACKS
-https://github.com/gigalixir/gigalixir-buildpack-phoenix-static.git
+https://github.com/gigalixir/gigalixir-buildpack-phoenix-static.git#gigalixir-22
 "
 fi
 
