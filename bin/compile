@@ -16,7 +16,7 @@ load_config
 detect_phoenix
 
 BUILDPACKS="
-https://github.com/gigatim/heroku-buildpack-elixir.git#feat-gigalixir-24-stack-support
+https://github.com/gigatim/gigatim-buildpack-elixir.git#feat-gigalixir-24-stack-support
 "
 
 if [ ! -f $elixir_config_file_path ]; then
