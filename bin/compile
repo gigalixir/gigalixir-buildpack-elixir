@@ -10,45 +10,34 @@ mkdir -p $1 $2 $3 # Ensure dirs are present
 
 build_dir=$(cd $1 && pwd)
 
-mix_file_url="$build_dir/mix.exs"
-distillery_file_url="$build_dir/rel/config.exs"
-elixir_releases_file_url="$build_dir/config/releases.exs"
-
 source ${build_pack_dir}/lib/common.sh
 
 load_config
-detect_assets
+detect_phoenix
 
 BUILDPACKS="
-https://github.com/HashNuke/heroku-buildpack-elixir.git
+https://github.com/gigatim/heroku-buildpack-elixir.git#feat-gigalixir-24-stack-support
 "
 
+if [ ! -f $elixir_config_file_path ]; then
+  # TODO: get the latest versions from the api server
+  # TODO: detect from .tool_versions file
+  echo "Missing file: elixir_buildpack.config"
+  exit 1
+fi
+
 # detect phoenix assets folder
-if $assets_detected; then
+if $phoenix_detected; then
   # app is using phoenix assets, include the phoenix static asset buildpack
   BUILDPACKS="$BUILDPACKS
 https://github.com/gigalixir/gigalixir-buildpack-phoenix-static.git
 "
 fi
 
-if [ -f $distillery_file_url ]; then
-  # app is using distillery, include the distillery buildpack
-  BUILDPACKS="$BUILDPACKS
-https://github.com/gigalixir/gigalixir-buildpack-distillery.git
-"
-elif [ -f $elixir_releases_file_url ]; then
-  # app is elixir releases, include the releases buildpack
-  BUILDPACKS="$BUILDPACKS
+# app is elixir releases, include the releases buildpack
+BUILDPACKS="$BUILDPACKS
 https://github.com/gigalixir/gigalixir-buildpack-releases.git
 "
-else
-  # app is using mix, include the mix buildpack for the sole
-  # purpose of generating a default Procfile properly for 
-  # Gigalixir
-  BUILDPACKS="$BUILDPACKS
-https://github.com/gigalixir/gigalixir-buildpack-mix.git
-"
-fi
 
 for BUILDPACK in $BUILDPACKS; do
   dir=$(mktemp -t buildpackXXXXX)

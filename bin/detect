@@ -10,26 +10,21 @@ mkdir -p $1 $2 $3 # Ensure dirs are present
 
 build_dir=$(cd $1 && pwd)
 
+# we assume Releases for all builds, Mix will require .buildpacks file for now, distillery is deprecated
+
 mix_file_url="$build_dir/mix.exs"
-distillery_file_url="$build_dir/rel/config.exs"
-elixir_releases_file_url="$build_dir/config/releases.exs"
 
 source ${build_pack_dir}/lib/common.sh
 
 load_config
-detect_assets
 
 if [ -f $mix_file_url ]; then
+  detect_phoenix
   echo -n "Elixir"
-  if $assets_detected; then
+  if $phoenix_detected; then
     echo -n "+Phoenix"
   fi
-  if [ -f $distillery_file_url ]; then
-    echo -n "+Distillery"
-  fi
-  if [ -f $elixir_releases_file_url ]; then
-    echo -n "+Releases"
-  fi
+  echo -n "+Releases"
   echo ""
   exit 0
 else

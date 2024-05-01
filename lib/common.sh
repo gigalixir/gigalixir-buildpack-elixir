@@ -17,21 +17,30 @@ load_config() {
   phoenix_dir=$build_dir/$phoenix_relative_path
 }
 
-detect_assets() {
+detect_phoenix() {
   info "Detecting assets directory"
   if [ -f "$phoenix_dir/$assets_path/package.json" ]; then
     info "package.json found in custom directory"
-    assets_detected=true
+    phoenix_detected=true
   elif [ -f "$phoenix_dir/assets/package.json" ]; then
     # Check phoenix assets directory for package.json, phoenix 1.3.x and later
     info "package.json found in assets directory"
-    assets_detected=true
+    phoenix_detected=true
   elif [ -f "$phoenix_dir/package.json" ]; then
     # Check phoenix root directory for package.json, phoenix 1.2.x and prior
     info "package.json detected in root"
-    assets_detected=true
+    phoenix_detected=true
+  elif [ -d "$phoenix_dir/assets" ]; then
+    # Check if assets folder exists and mix.exs mentions phoenix
+    if find $build_dir -type f -name "mix.exs" | xargs grep -q phoenix; then
+      info "detected assets directory and phoenix in mix.exs file"
+      phoenix_detected=true
+    else
+      info "detected assets directory, but no phoenix not in the mix.exs file"
+      phoenix_detected=false
+    fi
   else
     info "no package.json found"
-    assets_detected=false
+    phoenix_detected=false
   fi
 }
