@@ -39,7 +39,7 @@ function runtime_mix_home_path() {
 }
 
 function stack_based_cache_path() {
-  echo "${cache_path}/heroku-buildpack-elixir/stack-cache"
+  echo "${cache_path}/gigalixir-buildpack-elixir/stack-cache"
 }
 
 function deps_backup_path() {

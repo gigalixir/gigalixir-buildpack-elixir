@@ -65,7 +65,7 @@ function load_config() {
   then
     source $custom_config_file
   else
-    output_line "Sorry, an elixir_buildpack.config is required. Please see https://github.com/HashNuke/heroku-buildpack-elixir#configuration"
+    output_line "Sorry, an elixir_buildpack.config is required. Please see https://github.com/gigalixir/gigalixir-buildpack-elixir#configuration"
     exit 1
   fi
 
@@ -177,7 +177,7 @@ function fix_erlang_version() {
 }
 
 function fix_elixir_version() {
-  # TODO: this breaks if there is an carriage return behind elixir_version=(branch master)^M
+  # TODO: this breaks if there is an carriage return behind elixir_version=(branch main)^M
   if [ ${#elixir_version[@]} -eq 2 ] && [ ${elixir_version[0]} = "branch" ]; then
     force_fetch=true
     elixir_version=${elixir_version[1]}
@@ -199,7 +199,7 @@ function fix_elixir_version() {
   else
     output_line "Invalid Elixir version specified"
     output_line "See the README for allowed formats at:"
-    output_line "https://github.com/HashNuke/heroku-buildpack-elixir"
+    output_line "https://github.com/gigalixir/gigalixir-buildpack-elixir"
     exit 1
   fi
 }

@@ -73,7 +73,7 @@ check_erlang_version() {
   version=$1
   exists=$(exact_erlang_version_available "$version" "$(fetch_erlang_versions)")
   if [ $exists -ne 0 ]; then
-    output_line "Sorry, Erlang '$version' isn't supported yet or isn't formatted correctly. For a list of supported versions, please see https://github.com/HashNuke/heroku-buildpack-elixir#version-support"
+    output_line "Sorry, Erlang '$version' isn't supported yet or isn't formatted correctly. For a list of supported versions, please see https://github.com/gigalixir/gigalixir-buildpack-elixir#version-support"
     exit 1
   fi
 }
@@ -82,7 +82,7 @@ check_elixir_version() {
   version=$1
   exists=$(exact_elixir_version_available "$version" "$(fetch_elixir_versions)")
   if [ $exists -ne 0 ]; then
-    output_line "Sorry, Elixir '$version' isn't supported yet or isn't formatted correctly. For a list of supported versions, please see https://github.com/HashNuke/heroku-buildpack-elixir#version-support"
+    output_line "Sorry, Elixir '$version' isn't supported yet or isn't formatted correctly. For a list of supported versions, please see https://github.com/gigalixir/gigalixir-buildpack-elixir#version-support"
     exit 1
   fi
 }
