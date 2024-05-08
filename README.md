@@ -3,6 +3,7 @@
 ## Features
 
 * **Easy configuration** with `elixir_buildpack.config` file
+* Automatic elixir and erlang version detection if you are using asdf
 * Use **prebuilt Elixir binaries**
 * Allows configuring Erlang
 * If your app doesn't have a Procfile, default web task `mix run --no-halt` will be run.
@@ -104,20 +105,12 @@ erlang_version=18.2.1
 * The buildpack will execute the commands configured in `hook_pre_compile` and/or `hook_post_compile` in the root directory of your application before/after it has been compiled (respectively). These scripts can be used to build or prepare things for your application, for example compiling assets.
 * The buildpack will execute the commands configured in `hook_pre_fetch_dependencies` in the root directory of your application before it fetches the application dependencies. This script can be used to clean certain dependencies before fetching new ones.
 
-## Testing
 
-To run tests
-```
-git clone https://github.com/gigalixir/gigalixir-buildpack-elixir
-export BUILDPACK="$(pwd)/gigalixir-buildpack-elixir"
-git clone https://github.com/jesseshieh/heroku-buildpack-testrunner
-git clone https://github.com/jesseshieh/shunit2
-export SHUNIT_HOME="$(pwd)/shunit2"
-cd heroku-buildpack-testrunner
-bin/run $BUILDPACK
-```
+## Tests
 
-See more info at https://github.com/jesseshieh/heroku-buildpack-testrunner/blob/master/README.md
+Tests are available in the [test](test) directory.
+To run all tests, use `for tst in test/*; do $tst; done`.
+
 
 ## Credits
 

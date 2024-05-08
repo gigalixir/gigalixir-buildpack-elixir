@@ -53,6 +53,15 @@ function assert_elixir_version_set() {
   fi
 }
 
+function extract_asdf_version() {
+  local file="${build_path}/.tool-versions"
+  local package=$1
+
+  if [ -f $file ]; then
+    grep "^$package" $file | tail -n 1 | awk '{print $2}'
+  fi
+}
+
 function load_config() {
   output_section "Checking Erlang and Elixir versions"
 
@@ -61,15 +70,21 @@ function load_config() {
   # Source for default versions file from buildpack first
   source "${build_pack_path}/elixir_buildpack.config"
 
+  erlang_version=$(extract_asdf_version "erlang")
+  elixir_version=$(extract_asdf_version "elixir")
+
   if [ -f $custom_config_file ];
   then
     source $custom_config_file
-  else
-    output_line "Sorry, an elixir_buildpack.config is required. Please see https://github.com/gigalixir/gigalixir-buildpack-elixir#configuration"
+    assert_elixir_version_set $custom_config_file
+  fi
+
+  if [ -z "$erlang_version" ] || [ -z "$elixir_version" ]; then
+    output_line "Sorry, an elixir_buildpack.config or asdf .tool-versions file is required."
+    output_line "Please see https://github.com/gigalixir/gigalixir-buildpack-elixir#configuration"
     exit 1
   fi
 
-  assert_elixir_version_set $custom_config_file
   fix_erlang_version
   fix_elixir_version
 
@@ -174,6 +189,9 @@ function clear_cached_files() {
 
 function fix_erlang_version() {
   erlang_version=$(echo "$erlang_version" | sed 's/[^0-9.]*//g')
+  if echo "$erlang_version" | grep -E "^[0-9]+$" > /dev/null; then
+    erlang_version="${erlang_version}.0"
+  fi
 }
 
 function fix_elixir_version() {
@@ -200,6 +218,11 @@ function fix_elixir_version() {
     output_line "Invalid Elixir version specified"
     output_line "See the README for allowed formats at:"
     output_line "https://github.com/gigalixir/gigalixir-buildpack-elixir"
+    exit 1
+  fi
+
+  if [ -z "$elixir_version" ]; then
+    output_line "Unable to detect elixir version"
     exit 1
   fi
 }
