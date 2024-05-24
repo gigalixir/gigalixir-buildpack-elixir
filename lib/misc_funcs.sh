@@ -191,6 +191,8 @@ function fix_erlang_version() {
   erlang_version=$(echo "$erlang_version" | sed 's/[^0-9.]*//g')
   if echo "$erlang_version" | grep -E "^[0-9]+$" > /dev/null; then
     erlang_version="${erlang_version}.0"
+  elif echo "$erlang_version" | grep -E "\.0\.0$" > /dev/null; then
+    erlang_version=$(echo "$erlang_version" | sed 's/\.0\.0$/.0/')
   fi
 }
 
