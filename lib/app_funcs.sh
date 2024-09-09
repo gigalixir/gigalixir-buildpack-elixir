@@ -1,13 +1,13 @@
 function restore_app() {
   if [ -d $(deps_backup_path) ]; then
     mkdir -p ${build_path}/deps
-    cp -pR $(deps_backup_path)/* ${build_path}/deps
+    cp -pR $(deps_backup_path)/* ${build_path}/deps || true
   fi
 
   if [ $erlang_changed != true ] && [ $elixir_changed != true ]; then
     if [ -d $(build_backup_path) ]; then
       mkdir -p ${build_path}/_build
-      cp -pR $(build_backup_path)/* ${build_path}/_build
+      cp -pR $(build_backup_path)/* ${build_path}/_build || true
     fi
   fi
 }
