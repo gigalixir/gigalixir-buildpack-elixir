@@ -209,6 +209,8 @@ function fix_elixir_version() {
     if [[ ${elixir_version} =~ ^[0-9]+\.[0-9]+ ]]; then
       if [[ ${elixir_version} =~ ^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$ ]]; then
         echo "Detected release candidate"
+      elif [[ ${elixir_version} =~ ^[0-9]+\.[0-9]+\.[0-9]+-otp-[0-9]+$ ]]; then
+        echo "Detected otp bound version"
       else
         # strip out any non-digit non-dot characters
         elixir_version=$(echo "$elixir_version" | sed 's/[^0-9.]*//g')

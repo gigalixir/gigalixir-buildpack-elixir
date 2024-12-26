@@ -96,4 +96,17 @@ suite "load_config"
     [ $failed == "false" ]
 
 
+
+  test "handles new elixir version format"
+
+    echo "erlang 27.2" > $build_path/.tool-versions
+    echo "elixir 1.18.1-otp-27" >> $build_path/.tool-versions
+
+    load_config > /dev/null
+
+    [ "$erlang_version" == "27.2" ]
+    [ "$elixir_version" == "v1.18.1-otp-27" ]
+    [ $failed == "false" ]
+
+
 PASSED_ALL_TESTS=true
