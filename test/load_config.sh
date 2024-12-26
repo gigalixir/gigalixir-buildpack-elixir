@@ -105,7 +105,7 @@ suite "load_config"
     load_config > /dev/null
 
     [ "$erlang_version" == "27.2" ]
-    [ "$elixir_version" == "v1.18.1-otp-27" ]
+    [ "$elixir_version" == "v1.18.1" ]
     [ $failed == "false" ]
 
 
