@@ -70,8 +70,20 @@ function load_config() {
   # Source for default versions file from buildpack first
   source "${build_pack_path}/elixir_buildpack.config"
 
-  erlang_version=$(extract_asdf_version "erlang")
-  elixir_version=$(extract_asdf_version "elixir")
+  asdf_erlang_version=$(extract_asdf_version "erlang")
+  asdf_elixir_version=$(extract_asdf_version "elixir")
+  if [ -z "${asdf_erlang_version}" ] && [ -n "${asdf_elixir_version}" ]; then
+    output_line "WARNING: Elixir version found in .tool-versions, but no Erlang version found."
+    output_line "         The elixir version will not be used from .tool-versions."
+  fi
+  if [ -n "${asdf_erlang_version}" ] && [ -z "${asdf_elixir_version}" ]; then
+    output_line "WARNING: Erlang version found in .tool-versions, but no Elixir version found."
+    output_line "         The erlang version will not be used from .tool-versions."
+  fi
+  if [ -n "${asdf_erlang_version}" ] && [ -n "${asdf_elixir_version}" ]; then
+    elixir_version=${asdf_elixir_version}
+    erlang_version=${asdf_erlang_version}
+  fi
 
   if [ -f $custom_config_file ];
   then
