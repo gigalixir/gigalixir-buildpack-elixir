@@ -87,7 +87,7 @@ function load_config() {
 
   if [ -f $custom_config_file ];
   then
-    source $custom_config_file
+    source_file $custom_config_file
     assert_elixir_version_set $custom_config_file
   fi
 
@@ -242,4 +242,15 @@ function fix_elixir_version() {
     output_line "Unable to detect elixir version"
     exit 1
   fi
+}
+
+function source_file() {
+  local bkup_file=$(mktemp /tmp/buildpack_source_file_bkup.XXXX)
+
+  cp $1 $bkup_file
+
+  # sanitize the file to avoid any non-printable characters
+  LC_ALL=C tr -cd '\11\12\15\40-\176' < $bkup_file > $1
+  source $1
+  mv $bkup_file $1
 }
