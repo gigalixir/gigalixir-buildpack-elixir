@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -e -o pipefail
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 source $SCRIPT_DIR/.test_support.sh
@@ -108,6 +108,20 @@ erlang_version=26.0" > $build_path/elixir_buildpack.config
     [ $failed == "false" ]
     [ "$erlang_version" == "26.0" ]
     [ "$elixir_version" == "v1.18.3" ]
+
+
+
+  test "has config file with versions and asdf file with only unrelated packages"
+
+    echo "nodejs 22.1.0" > $build_path/.tool-versions
+    echo "elixir_version=1.16.2
+erlang_version=26.2.5" > $build_path/elixir_buildpack.config
+
+    load_config > /dev/null
+
+    [ "$erlang_version" == "26.2.5" ]
+    [ "$elixir_version" == "v1.16.2" ]
+    [ $failed == "false" ]
 
 
 

@@ -58,7 +58,7 @@ function extract_asdf_version() {
   local package=$1
 
   if [ -f $file ]; then
-    grep "^$package" $file | tail -n 1 | awk '{print $2}'
+    grep "^$package" $file | tail -n 1 | awk '{print $2}' || true
   fi
 }
 
