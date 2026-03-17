@@ -18,6 +18,7 @@ cache_path=$(cd $2 && pwd)
 env_path=$(cd $3 && pwd)
 
 
+source ${build_pack_path}/lib/output_funcs.sh
 source ${build_pack_path}/lib/path_funcs.sh
 source ${build_pack_path}/lib/misc_funcs.sh
 source ${build_pack_path}/lib/erlang_funcs.sh
