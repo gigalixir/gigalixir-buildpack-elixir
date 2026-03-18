@@ -1,37 +1,3 @@
-# Outputs log line
-#
-# Usage:
-#
-#     output_line "Cloning repository"
-#
-function output_line() {
-  local spacing="      "
-  echo "${spacing} $1"
-}
-
-# Outputs section heading
-#
-# Usage:
-#
-#     output_section "Application tasks"
-#
-function output_section() {
-  local indentation="----->"
-  echo "${indentation} $1"
-}
-
-function output_warning() {
-  local spacing="      "
-  echo -e "${spacing} \e[31m$1\e[0m"
-}
-
-function output_stderr() {
-  # Outputs to stderr in case it is inside a function so it does not
-  # disturb the return value. Useful for debugging.
-  echo "$@" 1>&2;
-}
-
-
 function assert_elixir_version_set() {
   custom_config_file=$1
 
