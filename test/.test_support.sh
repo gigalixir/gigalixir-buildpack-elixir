@@ -25,9 +25,21 @@ cache_path=${TEST_DIR}/cache_path
 mkdir -p ${build_path} ${cache_path}
 
 
-# overridden functions
-info() {
+# stub output functions to suppress noise in tests
+output_section() {
   true
+}
+output_line() {
+  true
+}
+output_warning() {
+  true
+}
+output_stderr() {
+  true
+}
+output_indent() {
+  cat > /dev/null
 }
 
 # helper functions
