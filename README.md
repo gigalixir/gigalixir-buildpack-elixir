@@ -19,6 +19,7 @@
     * gigalixir-20 stack: https://builds.hex.pm/builds/otp/ubuntu-20.04/builds.txt
     * gigalixir-22 stack: https://builds.hex.pm/builds/otp/ubuntu-22.04/builds.txt
     * gigalixir-24 stack: https://builds.hex.pm/builds/otp/ubuntu-24.04/builds.txt
+    * gigalixir-26 stack: https://builds.hex.pm/builds/otp/ubuntu-26.04/builds.txt
     * All other stacks: https://github.com/gigalixir/gigalixir-buildpack-elixir-otp-builds/blob/main/otp-versions
 * Elixir - Prebuilt releases (1.0.4, 1.0.3, etc) or prebuilt branches (master, v1.7, etc)
   * The full list of releases can be found here: https://github.com/elixir-lang/elixir/releases
@@ -109,7 +110,7 @@ erlang_version=18.2.1
 ## Tests
 
 Tests are available in the [test](test) directory.
-To run all tests, use `for tst in test/*; do $tst; done`.
+To run all tests, use `make test`.
 
 
 ## Credits
