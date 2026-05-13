@@ -11,6 +11,9 @@ erlang_builds_url() {
     "heroku-24")
       erlang_builds_url="https://builds.hex.pm/builds/otp/ubuntu-24.04"
       ;;
+    "heroku-26")
+      erlang_builds_url="https://builds.hex.pm/builds/otp/ubuntu-26.04"
+      ;;
     *)
       erlang_builds_url="https://s3.amazonaws.com/heroku-buildpack-elixir/erlang/cedar-14"
       ;;
@@ -36,6 +39,10 @@ fetch_erlang_versions() {
       curl -s "$url" | awk '/^OTP-([0-9.]+ )/ {print substr($1,5)}' > /tmp/otp_versions
       ;;
     "heroku-24")
+      url="https://builds.hex.pm/builds/otp/ubuntu-24.04/builds.txt"
+      curl -s "$url" | awk '/^OTP-([0-9.]+ )/ {print substr($1,5)}' > /tmp/otp_versions
+      ;;
+    "heroku-26")
       url="https://builds.hex.pm/builds/otp/ubuntu-24.04/builds.txt"
       curl -s "$url" | awk '/^OTP-([0-9.]+ )/ {print substr($1,5)}' > /tmp/otp_versions
       ;;
