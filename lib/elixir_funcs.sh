@@ -95,7 +95,57 @@ function backup_mix() {
 
 function install_hex() {
   output_section "Installing Hex"
-  mix local.hex --force
+
+  # Capture the output so we can detect and explain the known OTP 27.x TLS
+  # regression (erlang/otp#9208) that breaks Hex installation. Without this,
+  # customers only see an opaque certificate error and have to open a ticket.
+  local hex_log
+  local status=0
+  hex_log=$(mix local.hex --force 2>&1) || status=$?
+
+  echo "${hex_log}"
+
+  if [ "${status}" -ne 0 ]; then
+    diagnose_hex_tls_regression "${hex_log}"
+    exit "${status}"
+  fi
+}
+
+# Detects the Erlang/OTP TLS regression (erlang/otp#9208) that makes Hex
+# installation fail with a "key_usage_mismatch" certificate error when Mix
+# downloads from builds.hex.pm. Introduced on the OTP 27 line and fixed in
+# OTP 27.2.2. Prints guidance tailored to whichever version-config file the
+# app actually uses, so support does not have to triage these one by one.
+function diagnose_hex_tls_regression() {
+  local hex_log=$1
+
+  # "key_usage_mismatch" is the distinctive marker of this regression; gate on
+  # the OTP 27 line so we never misattribute an unrelated cert error to it.
+  echo "${hex_log}" | grep -q "key_usage_mismatch" || return 0
+  [ "$(otp_version "${erlang_version}")" = "27" ] || return 0
+
+  output_line ""
+  output_warning "Hex could not be installed because of a known TLS regression in Erlang/OTP ${erlang_version}."
+  output_warning "This is erlang/otp#9208, fixed in OTP 27.2.2."
+  output_line ""
+  output_line "Fix: set your Erlang/OTP version to 27.2.2 or newer."
+
+  if [ -n "$(extract_asdf_version erlang)" ]; then
+    output_line "Update the 'erlang' line in your .tool-versions file, e.g.:"
+    output_line "    erlang 27.2.2"
+  elif [ -f "${build_path}/elixir_buildpack.config" ] && grep -q "^erlang_version=" "${build_path}/elixir_buildpack.config"; then
+    output_line "Update erlang_version in your elixir_buildpack.config, e.g.:"
+    output_line "    erlang_version=27.2.2"
+  else
+    output_line "Set erlang_version in your elixir_buildpack.config, e.g.:"
+    output_line "    erlang_version=27.2.2"
+    output_line "or add an 'erlang' line to a .tool-versions file, e.g.:"
+    output_line "    erlang 27.2.2"
+  fi
+
+  output_line ""
+  output_line "Reference: https://github.com/erlang/otp/issues/9208"
+  output_line ""
 }
 
 function install_rebar() {
