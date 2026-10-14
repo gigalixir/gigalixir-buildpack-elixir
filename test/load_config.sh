@@ -13,7 +13,7 @@ function reset_test() {
   output_lines=()
   erlang_version=""
   elixir_version=""
-  rm -f $build_path/elixir_buildpack.config $build_path/.tool-versions
+  rm -f $build_path/elixir_buildpack.config $build_path/.tool-versions $build_path/mise.toml $build_path/.mise.toml
 }
 
 output_line() {
@@ -149,6 +149,117 @@ erlang_version=26.2.5" > $build_path/elixir_buildpack.config
 
     [ "$erlang_version" == "27.2" ]
     [ "$elixir_version" == "v1.18.1" ]
+    [ $failed == "false" ]
+
+
+  test "missing config file, but has mise.toml"
+
+    echo '[tools]
+erlang = "28.1"
+elixir = "1.19.1-otp-28"
+node = "24.10.0"' > $build_path/mise.toml
+
+    load_config > /dev/null
+
+    [ "$erlang_version" == "28.1" ]
+    [ "$elixir_version" == "v1.19.1" ]
+    [ $failed == "false" ]
+
+
+
+  test "missing config file, but has .mise.toml"
+
+    echo '[tools]
+erlang = "28.1"
+elixir = "1.19.1"' > $build_path/.mise.toml
+
+    load_config > /dev/null
+
+    [ "$erlang_version" == "28.1" ]
+    [ "$elixir_version" == "v1.19.1" ]
+    [ $failed == "false" ]
+
+
+
+  test "reads mise.toml array and table versions, ignoring other tables"
+
+    echo '[env]
+elixir = "1.0.0"
+
+[tools]
+"erlang" = { version = "28.1", os = ["linux"] }
+elixir = ["1.19.1", "1.18.4"]  # the first is the default
+
+[settings]
+erlang = "1.0.0"' > $build_path/mise.toml
+
+    load_config > /dev/null
+
+    [ "$erlang_version" == "28.1" ]
+    [ "$elixir_version" == "v1.19.1" ]
+    [ $failed == "false" ]
+
+
+
+  test ".tool-versions takes precedence over mise.toml"
+
+    echo '[tools]
+erlang = "28.1"
+elixir = "1.19.1"' > $build_path/mise.toml
+    echo "erlang 25.2" > $build_path/.tool-versions
+    echo "elixir 1.10.4" >> $build_path/.tool-versions
+
+    load_config > /dev/null
+
+    [ "$erlang_version" == "25.2" ]
+    [ "$elixir_version" == "v1.10.4" ]
+    [ $failed == "false" ]
+
+
+
+  test ".tool-versions without erlang or elixir falls back to mise.toml"
+
+    echo "nodejs 22.1.0" > $build_path/.tool-versions
+    echo '[tools]
+erlang = "28.1"
+elixir = "1.19.1"' > $build_path/mise.toml
+
+    load_config > /dev/null
+
+    [ "$erlang_version" == "28.1" ]
+    [ "$elixir_version" == "v1.19.1" ]
+    [ $failed == "false" ]
+
+
+
+  test "mise.toml with only elixir warns"
+
+    echo '[tools]
+elixir = "1.19.1"' > $build_path/mise.toml
+    echo "elixir_version=1.18.2
+erlang_version=27.0" > $build_path/elixir_buildpack.config
+
+    load_config > /dev/null
+
+    echo "${output_lines[@]}" | grep -q "WARNING: Elixir version found in mise.toml, but no Erlang version found."
+    [ "$erlang_version" == "27.0" ]
+    [ "$elixir_version" == "v1.18.2" ]
+    [ $failed == "false" ]
+
+
+
+  test "config file versions override mise.toml"
+
+    echo '[tools]
+erlang = "28.1"
+elixir = "1.19.1"' > $build_path/mise.toml
+    echo "elixir_version=1.18.2
+erlang_version=27.0" > $build_path/elixir_buildpack.config
+
+    load_config > /dev/null
+
+    [ "$erlang_version" == "27.0" ]
+    [ "$elixir_version" == "v1.18.2" ]
     [ $failed == "false" ]
 
 

@@ -3,7 +3,7 @@
 ## Features
 
 * **Easy configuration** with `elixir_buildpack.config` file
-* Automatic elixir and erlang version detection if you are using asdf
+* Automatic elixir and erlang version detection if you are using asdf (`.tool-versions`) or mise (`mise.toml`)
 * Use **prebuilt Elixir binaries**
 * Allows configuring Erlang
 * If your app doesn't have a Procfile, default web task `mix run --no-halt` will be run.
@@ -41,6 +41,8 @@ and is designed specifically to follow the Cloud Native Buildpack conventions.
 Create a `elixir_buildpack.config` file in your app's root dir. The file's syntax is bash.
 
 If you don't specify a config option, then the default option from the buildpack's [`elixir_buildpack.config`](https://github.com/gigalixir/gigalixir-buildpack-elixir/blob/main/elixir_buildpack.config) file will be used.
+
+If `elixir_buildpack.config` doesn't set `erlang_version` and `elixir_version`, they are read from `.tool-versions`, falling back to the `[tools]` table of `mise.toml` (or `.mise.toml`).
 
 
 __Here's a full config file with all available options:__
