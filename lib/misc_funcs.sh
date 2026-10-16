@@ -28,6 +28,42 @@ function extract_asdf_version() {
   fi
 }
 
+# Prints the path of the mise config file to read versions from, if any
+function mise_config_file() {
+  local file
+  for file in "${build_path}/mise.toml" "${build_path}/.mise.toml"; do
+    if [ -f "$file" ]; then
+      echo "$file"
+      return
+    fi
+  done
+}
+
+# Reads a tool's version from the [tools] table of a mise config file.
+# Handles `elixir = "1.18.1"`, `elixir = ["1.18.1", ...]` (the first is
+# mise's default) and `elixir = { version = "1.18.1" }`.
+function extract_mise_version() {
+  local file=$1
+  local package=$2
+
+  awk -v package="$package" '
+    /^[[:space:]]*\[/ { in_tools = ($0 ~ /^[[:space:]]*\[tools\][[:space:]]*(#.*)?$/); next }
+    in_tools {
+      line = $0
+      sub(/^[[:space:]]*/, "", line)
+      key = line
+      sub(/[[:space:]]*=.*$/, "", key)
+      gsub(/["\047]/, "", key)
+      if (key != package || line !~ /=/) next
+      sub(/^[^=]*=/, "", line)
+      if (match(line, /"[^"]*"|\047[^\047]*\047/)) {
+        print substr(line, RSTART + 1, RLENGTH - 2)
+        exit
+      }
+    }
+  ' "$file"
+}
+
 function load_config() {
   output_section "Checking Erlang and Elixir versions"
 
@@ -36,15 +72,22 @@ function load_config() {
   # Source for default versions file from buildpack first
   source "${build_pack_path}/elixir_buildpack.config"
 
+  local mise_file=$(mise_config_file)
+  local version_file=".tool-versions"
   asdf_erlang_version=$(extract_asdf_version "erlang")
   asdf_elixir_version=$(extract_asdf_version "elixir")
+  if [ -z "${asdf_erlang_version}" ] && [ -z "${asdf_elixir_version}" ] && [ -n "${mise_file}" ]; then
+    version_file=$(basename "${mise_file}")
+    asdf_erlang_version=$(extract_mise_version "${mise_file}" "erlang")
+    asdf_elixir_version=$(extract_mise_version "${mise_file}" "elixir")
+  fi
   if [ -z "${asdf_erlang_version}" ] && [ -n "${asdf_elixir_version}" ]; then
-    output_line "WARNING: Elixir version found in .tool-versions, but no Erlang version found."
-    output_line "         The elixir version will not be used from .tool-versions."
+    output_line "WARNING: Elixir version found in ${version_file}, but no Erlang version found."
+    output_line "         The elixir version will not be used from ${version_file}."
   fi
   if [ -n "${asdf_erlang_version}" ] && [ -z "${asdf_elixir_version}" ]; then
-    output_line "WARNING: Erlang version found in .tool-versions, but no Elixir version found."
-    output_line "         The erlang version will not be used from .tool-versions."
+    output_line "WARNING: Erlang version found in ${version_file}, but no Elixir version found."
+    output_line "         The erlang version will not be used from ${version_file}."
   fi
   if [ -n "${asdf_erlang_version}" ] && [ -n "${asdf_elixir_version}" ]; then
     elixir_version=${asdf_elixir_version}
@@ -58,7 +101,7 @@ function load_config() {
   fi
 
   if [ -z "$erlang_version" ] || [ -z "$elixir_version" ]; then
-    output_line "Sorry, an elixir_buildpack.config or asdf .tool-versions file is required."
+    output_line "Sorry, an elixir_buildpack.config, mise.toml or asdf .tool-versions file is required."
     output_line "Please see https://github.com/gigalixir/gigalixir-buildpack-elixir#configuration"
     exit 1
   fi
