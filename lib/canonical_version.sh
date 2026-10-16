@@ -43,7 +43,7 @@ fetch_erlang_versions() {
       curl -s "$url" | awk '/^OTP-([0-9.]+ )/ {print substr($1,5)}' > /tmp/otp_versions
       ;;
     "heroku-26")
-      url="https://builds.hex.pm/builds/otp/ubuntu-24.04/builds.txt"
+      url="https://builds.hex.pm/builds/otp/ubuntu-26.04/builds.txt"
       curl -s "$url" | awk '/^OTP-([0-9.]+ )/ {print substr($1,5)}' > /tmp/otp_versions
       ;;
     *)
