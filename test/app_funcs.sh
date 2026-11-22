@@ -139,6 +139,147 @@ suite "write_profile_d_script"
     grep -q "export PATH=" $build_path/.profile.d/elixir_buildpack_paths.sh
 
 
+suite "restore_app"
+
+  setup_cache() {
+    build_path="${TEST_DIR}/restore_build"
+    cache_path="${TEST_DIR}/restore_cache"
+    erlang_changed=false
+    elixir_changed=false
+    elixir_version=v1.14.5
+    rm -rf "$build_path" "$cache_path"
+    mkdir -p "$build_path" "$(deps_backup_path)/dep" "$(build_backup_path)/prod"
+  }
+
+  test "restores _build when mix.lock is unchanged"
+
+    setup_cache
+    echo "lock" > "${build_path}/mix.lock"
+    mix_lock_hash > "$(mix_lock_hash_backup_path)"
+
+    restore_app
+
+    [ -d "${build_path}/_build/prod" ]
+    [ -d "${build_path}/deps/dep" ]
+
+
+  test "skips _build but restores deps when mix.lock changed"
+
+    setup_cache
+    echo "old" > "${build_path}/mix.lock"
+    mix_lock_hash > "$(mix_lock_hash_backup_path)"
+    echo "new" > "${build_path}/mix.lock"
+
+    restore_app
+
+    [ ! -d "${build_path}/_build" ]
+    [ -d "${build_path}/deps/dep" ]
+
+
+  test "skips _build when the cache has no stored hash"
+
+    setup_cache
+    echo "lock" > "${build_path}/mix.lock"
+
+    restore_app
+
+    [ ! -d "${build_path}/_build" ]
+    [ -d "${build_path}/deps/dep" ]
+
+
+  test "restores _build when there is no mix.lock and no lock was cached"
+
+    setup_cache
+    mix_lock_hash > "$(mix_lock_hash_backup_path)"
+
+    restore_app
+
+    [ -d "${build_path}/_build/prod" ]
+
+
+  test "restores _build on a lock change for Elixir 1.15 and later"
+
+    setup_cache
+    elixir_version=v1.15.0
+    echo "old" > "${build_path}/mix.lock"
+    mix_lock_hash > "$(mix_lock_hash_backup_path)"
+    echo "new" > "${build_path}/mix.lock"
+
+    restore_app
+
+    [ -d "${build_path}/_build/prod" ]
+
+
+  test "restores _build with no stored hash for Elixir 1.15 and later"
+
+    setup_cache
+    elixir_version=v1.20.5
+    echo "lock" > "${build_path}/mix.lock"
+
+    restore_app
+
+    [ -d "${build_path}/_build/prod" ]
+
+
+  test "skips _build when the Elixir version changed"
+
+    setup_cache
+    echo "lock" > "${build_path}/mix.lock"
+    mix_lock_hash > "$(mix_lock_hash_backup_path)"
+    elixir_changed=true
+
+    restore_app
+
+    [ ! -d "${build_path}/_build" ]
+
+
+suite "elixir_below_1_15"
+
+  test "true below 1.15"
+
+    for elixir_version in v1.11.4 v1.14.5 v1.14 1.9.0 v0.12.0; do
+      elixir_below_1_15
+    done
+
+
+  test "false at 1.15 and above"
+
+    for elixir_version in v1.15 v1.15.0 v1.15.0-rc.1 v1.15.8 v1.20.5 v2.0.0; do
+      if elixir_below_1_15; then false; fi
+    done
+
+
+  test "true when the version can't be parsed"
+
+    for elixir_version in main master abc ""; do
+      elixir_below_1_15
+    done
+
+
+suite "backup_app"
+
+  test "stores the mix.lock hash next to the backups"
+
+    build_path="${TEST_DIR}/backup_build"
+    cache_path="${TEST_DIR}/backup_cache"
+    rm -rf "$build_path" "$cache_path"
+    mkdir -p "${build_path}/deps/dep" "${build_path}/_build/prod"
+    echo "lock" > "${build_path}/mix.lock"
+
+    backup_app
+
+    [ "$(cat "$(mix_lock_hash_backup_path)")" == "$(mix_lock_hash)" ]
+
+
+  test "stores a no-lock marker when there is no mix.lock"
+
+    rm -f "${build_path}/mix.lock"
+
+    backup_app
+
+    [ "$(cat "$(mix_lock_hash_backup_path)")" == "none" ]
+
+
 suite "write_export"
 
   test "creates export file"
