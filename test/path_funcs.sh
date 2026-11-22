@@ -90,6 +90,13 @@ suite "path_funcs: runtime paths"
 
 suite "path_funcs: cache paths"
 
+  test "mix_lock_hash_backup_path"
+
+    result=$(mix_lock_hash_backup_path)
+
+    [ "$result" == "${cache_path}/gigalixir-buildpack-elixir/stack-cache/mix_lock_hash" ]
+
+
   test "stack_based_cache_path"
 
     result=$(stack_based_cache_path)

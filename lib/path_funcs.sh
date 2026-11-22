@@ -50,6 +50,10 @@ function build_backup_path() {
   echo $(stack_based_cache_path)/build_backup
 }
 
+function mix_lock_hash_backup_path() {
+  echo $(stack_based_cache_path)/mix_lock_hash
+}
+
 function mix_backup_path() {
   echo $(stack_based_cache_path)/.mix
 }

@@ -4,12 +4,47 @@ function restore_app() {
     cp -pR $(deps_backup_path)/* ${build_path}/deps || true
   fi
 
-  if [ $erlang_changed != true ] && [ $elixir_changed != true ]; then
+  if [ $erlang_changed != true ] && [ $elixir_changed != true ] && ! stale_build_cache; then
     if [ -d $(build_backup_path) ]; then
       mkdir -p ${build_path}/_build
       cp -pR $(build_backup_path)/* ${build_path}/_build || true
     fi
   fi
+}
+
+
+# Prints a hash of mix.lock, or "none" when the project has no lock file.
+function mix_lock_hash() {
+  if [ -f "${build_path}/mix.lock" ]; then
+    cksum < "${build_path}/mix.lock"
+  else
+    echo "none"
+  fi
+}
+
+# Elixir before 1.15 can load a cached dep's app spec before that dep is
+# rebuilt, so a _build cached under a different mix.lock must not be restored.
+# 1.15 prunes the load paths before compiling and is not affected.
+# An elixir_version that can't be read as major.minor (a branch or ref name)
+# counts as below 1.15, the safe side: it just costs a rebuild.
+function elixir_below_1_15() {
+  local version="${elixir_version#v}"
+  if [[ "$version" =~ ^([0-9]+)\.([0-9]+) ]]; then
+    local major=$((10#${BASH_REMATCH[1]})) minor=$((10#${BASH_REMATCH[2]}))
+    [ $major -lt 1 ] || { [ $major -eq 1 ] && [ $minor -lt 15 ]; }
+  else
+    return 0
+  fi
+}
+
+function stale_build_cache() {
+  elixir_below_1_15 && mix_lock_changed
+}
+
+# True when the cached hash is missing (cache predates it) or differs.
+function mix_lock_changed() {
+  local hash_file=$(mix_lock_hash_backup_path)
+  [ ! -f "$hash_file" ] || [ "$(cat "$hash_file")" != "$(mix_lock_hash)" ]
 }
 
 
@@ -78,11 +113,12 @@ function app_dependencies() {
 
 function backup_app() {
   # Delete the previous backups
-  rm -rf $(deps_backup_path) $(build_backup_path)
+  rm -rf $(deps_backup_path) $(build_backup_path) $(mix_lock_hash_backup_path)
 
   mkdir -p $(deps_backup_path) $(build_backup_path)
   cp -pR ${build_path}/deps/* $(deps_backup_path)
   cp -pR ${build_path}/_build/* $(build_backup_path)
+  mix_lock_hash > $(mix_lock_hash_backup_path)
 }
 
 
