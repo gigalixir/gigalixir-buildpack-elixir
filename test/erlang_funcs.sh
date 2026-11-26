@@ -64,6 +64,19 @@ suite "erlang_builds_url"
 
     [ "$result" == "https://builds.hex.pm/builds/otp/ubuntu-26.04" ]
 
+  test "returns scalingo-24 URL"
+
+    STACK="scalingo-24"
+    result=$(erlang_builds_url)
+
+    [ "$result" == "https://builds.hex.pm/builds/otp/ubuntu-24.04" ]
+
+  test "returns scalingo-26 URL"
+
+    STACK="scalingo-26"
+    result=$(erlang_builds_url)
+
+    [ "$result" == "https://builds.hex.pm/builds/otp/ubuntu-26.04" ]
 
   test "returns cedar-14 URL for unknown stack"
 
